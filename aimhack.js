@@ -138,17 +138,54 @@ document.addEventListener("mousedown", (e) => {
 
 /////////////////////////////////////////////////////////////////
 
+//
+// var drawBox = (coords, markSize = 8) => {
+//   const canvasContext = canvas.getContext("experimental-webgl");
+//   const offset = markSize / 2;
+//   canvasContext.fillStyle = "#FF0000";
+//   canvasContext.fillRect(coords.x - offset, coords.y - offset, markSize, markSize);
+// };
 
-var drawBox = (x, y, ) => {
 
-};
+// const boxCanvas = document.createElement("CANVAS");
+// boxCanvas.height = canvas.height;
+// boxCanvas.width = canvas.width;
+// boxCanvas.style.border = "1px solid #000000";
+// boxCanvas.style.position = "absolute";
+// boxCanvas.style.left = "0";
+// boxCanvas.style.top = "0";
+// document.body.appendChild(boxCanvas);
+// const boxCanvasContext = boxCanvas.getContext("2d");
+//
+// var drawBox = (coords, markSize = 40) => {
+//   boxCanvasContext.beginPath();
+//   boxCanvasContext.arc(coords.x, coords.y, markSize, 0, 2*Math.PI);
+//   boxCanvasContext.stroke();
+// };
 
-var getCoordsOf = (obj) => {
-  var coordinates =
-BABYLON.Vector3.Project(players[4].actor.mesh.position, BABYLON.Matrix.Identity(), camera.getViewMatrix().multiply(camera.getProjectionMatrix()),
-                    camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
-  return coordinates;
-};
+
+var outputplane = BABYLON.Mesh.CreatePlane("outputplane", 25, scene, false);
+outputplane.billboardMode = BABYLON.AbstractMesh.BILLBOARDMODE_ALL;
+outputplane.material = new BABYLON.StandardMaterial("outputplane", scene);
+outputplane.material.backFaceCulling = false;
+outputplane.scaling = {x: 0.02, y: 0.02, z: 1}; // magic
+outputplane.position = new BABYLON.Vector3(0, 0, 0.2);
+outputplane.parent = camera;
+var outputplaneTexture = new BABYLON.DynamicTexture("dynamic texture", 512, scene, true);
+outputplaneTexture.hasAlpha = true;
+outputplane.material.diffuseTexture = outputplaneTexture;
+
+var placeDot = (coords, text = '*') => outputplaneTexture.drawText(text, coords.x, coords.y, "20px verdana", "white");
+
+var getCoordsOf = (mesh) => BABYLON.Vector3.Project(
+  mesh.position,
+  BABYLON.Matrix.Identity(),
+  camera.getViewMatrix().multiply(camera.getProjectionMatrix()),
+  camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()) // todo just (engine) ?
+);
+
+var getPlayerCoordsOnScreen = (playerId) => getCoordsOf(players[playerId].actor.mesh);
+
 
 
 
